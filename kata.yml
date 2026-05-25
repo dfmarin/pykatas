@@ -1,0 +1,14 @@
+id: two_sum
+title: "Two Sum"
+description: |
+  Given a list of integers and a target, return indices of the two numbers
+  that add up to the target.
+difficulty: easy          # easy | medium | hard
+tags: [arrays, hash-map]
+function_name: two_sum
+timeout_seconds: 5
+memory_limit_mb: 128
+public_tests: true        # whether test_public.py is shown to the user
+lint_rules:               # ruff rule overrides for this kata
+  - "E501"
+
