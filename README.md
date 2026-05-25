@@ -37,11 +37,11 @@ This project was built to reflect real‑world engineering discipline. The follo
 ```mermaid
 graph TD
     Browser[Browser]
-    Web[Flask Web<br/>(gunicorn)]
-    Redis[Redis Queue<br/>(RQ)]
+    Web[Flask Web<br/>gunicorn]
+    Redis[Redis Queue<br/>RQ]
     Worker[RQ Worker]
     Sandbox[Docker Sandbox<br/>network none, read-only]
-    DB[(PostgreSQL<br/>results + metadata)]
+    DB[PostgreSQL<br/>results + metadata]
     Static[Static Assets<br/>CodeMirror, CSS, JS]
 
     Browser -->|GET /katas/...| Web
