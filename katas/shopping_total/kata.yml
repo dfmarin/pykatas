@@ -1,0 +1,14 @@
+id: shopping_total
+title: "Shopping Total"
+description: |
+  Given a dictionary of items and their costs (item → price) and an array of items bought,
+  calculate the total cost of the items that exist in the dictionary, then add the given tax rate.
+  If an item does not exist in the costs dictionary, it is ignored.
+  The result should be rounded to two decimal places.
+difficulty: easy
+tags: [dictionaries, lists, math, rounding]
+function_name: get_total
+timeout_seconds: 5
+memory_limit_mb: 128
+public_tests: true
+lint_rules: []
