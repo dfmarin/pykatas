@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+      - run: uv pip install -e ".[dev]"
+      - run: ruff check . && ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: kata_test
+          POSTGRES_USER: kata
+          POSTGRES_PASSWORD: kata
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U kata"
+          --health-interval=5s
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    env:
+      SECRET_KEY: ci-secret
+      DATABASE_URL: postgresql+psycopg://kata:kata@localhost/kata_test
+      REDIS_URL: redis://localhost:6379/0
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+      - run: uv pip install -e ".[dev]"
+      - run: flask db upgrade
+      - run: pytest --cov=app --cov-report=xml
+      - uses: codecov/codecov-action@v4
+
+  sandbox-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f sandbox/Dockerfile -t kata-sandbox:ci .
+      - run: docker run --rm kata-sandbox:ci python -c "import pytest; print('OK')"
