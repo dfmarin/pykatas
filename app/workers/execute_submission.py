@@ -1,4 +1,5 @@
 """RQ job: pull a submission from the DB, run it in the sandbox, persist results."""
+
 import logging
 from datetime import datetime, UTC
 
