@@ -53,6 +53,10 @@ def run_pytest(test_dir: Path, timeout: int) -> dict:
     }
 
 
+def clean_traceback(output: str) -> str:
+    return output.replace("/sandbox/", "").replace("/tmp/kata_job_", "<job>/")
+
+
 def main() -> None:
     kata_meta = json.loads(Path("/sandbox/kata.json").read_text())
     solution = Path("/sandbox/solution.py")
@@ -77,7 +81,7 @@ def main() -> None:
         output["status"] = "error"
         output["error"] = str(exc)
 
-    print(json.dumps(output))
+    print(json.dumps(clean_traceback(output)))
 
 
 if __name__ == "__main__":

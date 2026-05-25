@@ -25,6 +25,7 @@ class Submission(db.Model):
     pytest_output = db.Column(db.Text)
     lint_output = db.Column(db.Text)
     execution_time_ms = db.Column(db.Integer)
+    feedback_json = db.Column(db.JSON)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC))
     finished_at = db.Column(db.DateTime(timezone=True))
 
