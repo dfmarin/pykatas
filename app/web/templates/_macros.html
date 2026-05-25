@@ -1,0 +1,152 @@
+{#
+  _macros.html — Reusable Jinja2 macros for Kata Platform
+
+  Usage:
+    {% from "_macros.html" import render_field, difficulty_badge, status_badge, kata_card %}
+#}
+
+{# ── Form field with label + errors ────────────────────────── #}
+{% macro render_field(field, placeholder='', type=None, autocomplete='') %}
+  <div class="form-group">
+    {{ field.label(class_='form-label') }}
+    {% if type %}
+      {{ field(
+          class_='form-input' + (' is-invalid' if field.errors else ''),
+          placeholder=placeholder,
+          type=type,
+          autocomplete=autocomplete
+      ) }}
+    {% else %}
+      {{ field(
+          class_='form-input' + (' is-invalid' if field.errors else ''),
+          placeholder=placeholder,
+          autocomplete=autocomplete
+      ) }}
+    {% endif %}
+    {% for err in field.errors %}
+      <p class="form-error">{{ err }}</p>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{# ── Difficulty badge ────────────────────────────────────────── #}
+{% macro difficulty_badge(difficulty) %}
+  <span class="badge badge--{{ difficulty }}">{{ difficulty }}</span>
+{% endmacro %}
+
+{# ── Submission status badge ─────────────────────────────────── #}
+{% macro status_badge(status) %}
+  <span class="submission-item-status {{ status }}">
+    <span class="dot dot--{{ status }}"></span>
+    {{ status | upper }}
+  </span>
+{% endmacro %}
+
+{# ── Tag badge ───────────────────────────────────────────────── #}
+{% macro tag_badge(tag) %}
+  <span class="badge badge--tag">{{ tag }}</span>
+{% endmacro %}
+
+{# ── Kata card (for index page) ──────────────────────────────── #}
+{% macro kata_card(kata, delay=0) %}
+  <article
+    class="kata-card fade-up"
+    data-difficulty="{{ kata.difficulty }}"
+    style="animation-delay: {{ delay }}ms"
+    aria-label="{{ kata.title }}, {{ kata.difficulty }} difficulty"
+  >
+    <a
+      href="{{ url_for('web.kata_detail', kata_id=kata.id) }}"
+      class="kata-card-link"
+      aria-label="Open {{ kata.title }}"
+      tabindex="0"
+    ></a>
+
+    <div class="kata-card-top">
+      <h2 class="kata-card-title">{{ kata.title }}</h2>
+      {{ difficulty_badge(kata.difficulty) }}
+    </div>
+
+    <p class="kata-card-desc">
+      {{ kata.description | truncate(120) if kata.description else 'No description available.' }}
+    </p>
+
+    <div class="kata-card-footer">
+      <div class="kata-card-tags">
+        {% for tag in kata.tags[:4] %}
+          {{ tag_badge(tag) }}
+        {% endfor %}
+      </div>
+      <span class="kata-card-arrow">Start →</span>
+    </div>
+  </article>
+{% endmacro %}
+
+{# ── Submission row (for tables) ─────────────────────────────── #}
+{% macro submission_row(sub) %}
+  <div class="sub-table-row">
+    <a
+      href="{{ url_for('web.kata_detail', kata_id=sub.kata_id) }}"
+      class="sub-kata-link"
+    >{{ sub.kata_id | replace('_', ' ') | title }}</a>
+
+    {{ status_badge(sub.status.value) }}
+
+    <span class="sub-meta">
+      {{ sub.execution_time_ms ~ 'ms' if sub.execution_time_ms else '—' }}
+    </span>
+
+    <span class="sub-meta">
+      {{ sub.created_at.strftime('%b %d, %H:%M') if sub.created_at else '—' }}
+    </span>
+  </div>
+{% endmacro %}
+
+{# ── Empty state block ───────────────────────────────────────── #}
+{% macro empty_state(title, message, cta_label=None, cta_url=None) %}
+  <div style="
+    text-align: center;
+    padding: 4rem 2rem;
+    border: 1px solid var(--border);
+    color: var(--text-3);
+  ">
+    <p style="
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+      color: var(--text-2);
+    ">{{ title }}</p>
+    <p style="font-size: 0.8rem; margin-bottom: {% if cta_label %}1.5rem{% else %}0{% endif %};">
+      {{ message }}
+    </p>
+    {% if cta_label and cta_url %}
+      <a href="{{ cta_url }}" class="btn btn--primary">{{ cta_label }}</a>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{# ── Pagination controls ─────────────────────────────────────── #}
+{% macro pagination(paginator, endpoint, **kwargs) %}
+  {% if paginator.pages > 1 %}
+    <div class="pagination">
+      {% if paginator.has_prev %}
+        <a
+          href="{{ url_for(endpoint, page=paginator.prev_num, **kwargs) }}"
+          class="btn btn--sm"
+        >← Prev</a>
+      {% endif %}
+
+      <span class="pagination-info">
+        Page {{ paginator.page }} of {{ paginator.pages }}
+      </span>
+
+      {% if paginator.has_next %}
+        <a
+          href="{{ url_for(endpoint, page=paginator.next_num, **kwargs) }}"
+          class="btn btn--sm"
+        >Next →</a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endmacro %}

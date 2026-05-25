@@ -10,7 +10,6 @@ VALID_DIFFICULTIES = {"easy", "medium", "hard"}
 class KataDefinition:
     id: str
     title: str
-    description: str
     difficulty: str
     tags: list[str]
     function_name: str
@@ -19,6 +18,22 @@ class KataDefinition:
     kata_dir: Path
     public_tests: bool = True
     lint_rules: list[str] = field(default_factory=list)
+
+    @property
+    def description(self) -> str:
+        for line in self.readme.splitlines():
+            line = line.strip().lstrip("#").strip()
+            # first non-empty line of the README
+            if line:
+                return line
+        return ""
+
+    @property
+    def public_test_source(self) -> str:
+        path = self.kata_dir / "tests" / "test_public.py"
+        if path.exists():
+            return path.read_text()
+        return "# No public tests available."
 
     @property
     def starter_code(self) -> str:

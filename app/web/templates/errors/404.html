@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}404 — Not Found{% endblock %}
+
+{% block content %}
+<div style="
+  min-height: calc(100vh - var(--nav-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+">
+  <div>
+    <p style="
+      font-family: var(--font-display);
+      font-size: clamp(6rem, 20vw, 14rem);
+      line-height: 1;
+      color: var(--surface-3);
+      letter-spacing: 0.05em;
+      user-select: none;
+    ">404</p>
+
+    <h1 style="
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      margin-top: -1rem;
+      margin-bottom: 0.75rem;
+    ">Page Not Found</h1>
+
+    <p style="color: var(--text-2); font-size: 0.83rem; margin-bottom: 2rem; max-width: 360px;">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+
+    <a href="{{ url_for('web.index') }}" class="btn btn--primary">
+      ← Back to Katas
+    </a>
+  </div>
+</div>
+{% endblock %}
