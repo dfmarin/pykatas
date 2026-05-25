@@ -27,3 +27,6 @@ seed:
 worker:
 	rq worker --url $$REDIS_URL submissions
 
+sandbox-build:
+    docker build -f sandbox/Dockerfile -t kata-sandbox:latest .
+
