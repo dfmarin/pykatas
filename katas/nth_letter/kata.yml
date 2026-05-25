@@ -1,0 +1,13 @@
+id: nth_letter
+title: "Nth Letter Concatenation"
+description: |
+  Complete the function that takes an array of words.
+  You must concatenate the nth letter from each word to construct a new word
+  which should be returned as a string, where n is the position of the word in the list (0‑based).
+difficulty: easy
+tags: [strings, arrays, indexing]
+function_name: build_word
+timeout_seconds: 5
+memory_limit_mb: 128
+public_tests: true
+lint_rules: []
