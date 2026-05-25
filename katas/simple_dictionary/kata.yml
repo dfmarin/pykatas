@@ -1,0 +1,15 @@
+id: simple_dictionary
+title: "Simple Dictionary"
+description: |
+  Create a class `Dictionary` that stores word‑definition pairs.  
+  The class must have two methods:  
+  - `newentry(word, definition)` – adds a new word and its definition (or overwrites an existing one).  
+  - `look(word)` – returns the definition of the word. If the word does not exist, returns the string  
+    `"Can't find entry for {word}"`.
+difficulty: easy
+tags: [classes, data-structures, strings]
+class_name: Dictionary
+timeout_seconds: 5
+memory_limit_mb: 128
+public_tests: true
+lint_rules: []
