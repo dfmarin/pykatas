@@ -10,21 +10,26 @@ class BaseConfig:
     SANDBOX_IMAGE = os.getenv("SANDBOX_IMAGE", "kata-sandbox:latest")
     SANDBOX_TIMEOUT = int(os.getenv("SANDBOX_TIMEOUT", "30"))
 
+
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql+psycopg://kata:kata@localhost/kata_dev")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL", "postgresql+psycopg://kata:kata@localhost/kata_dev"
+    )
+
 
 class TestingConfig(BaseConfig):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "postgresql+psycopg://kata:kata@localhost/kata_test"
     WTF_CSRF_ENABLED = False
 
+
 class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
+
 
 config_by_name = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
     "production": ProductionConfig,
 }
-
