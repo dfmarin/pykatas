@@ -1,4 +1,5 @@
 from flask import request, jsonify, abort
+from flask_login import login_required, current_user
 from redis import Redis
 from rq import Queue
 from app.extensions import db, kata_loader
@@ -8,6 +9,7 @@ from app.workers.execute_submission import execute_submission
 
 
 @api_bp.post("/katas/<kata_id>/submit")
+@login_required
 def submit(kata_id: str):
     kata = kata_loader.get(kata_id)
     if not kata:
@@ -17,7 +19,12 @@ def submit(kata_id: str):
     if not source_code:
         return jsonify({"error": "source_code is required"}), 400
 
-    sub = Submission(kata_id=kata_id, source_code=source_code, status=SubmissionStatus.PENDING)
+    sub = Submission(
+        kata_id=kata_id,
+        source_code=source_code,
+        user_id=current_user.id,
+        status=SubmissionStatus.PENDING,
+    )
     db.session.add(sub)
     db.session.commit()
 
