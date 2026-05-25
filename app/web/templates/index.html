@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Kata Platform — Python Challenges{% endblock %}
+
+{% block content %}
+<div class="page-index">
+  <div class="container">
+
+    <!-- Hero -->
+    <header class="page-hero">
+      <p class="hero-eyebrow">Python Challenges</p>
+      <h1 class="hero-title">
+        Master Python<br>
+        <span>One Kata at a Time</span>
+      </h1>
+      <p class="hero-sub">
+        Submit solutions, get instant feedback with real test runners, linting, and
+        execution metrics. Level up your skills through deliberate practice.
+      </p>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="index-toolbar">
+      <div class="filter-group" role="group" aria-label="Filter by difficulty">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="easy">Easy</button>
+        <button class="filter-btn" data-filter="medium">Medium</button>
+        <button class="filter-btn" data-filter="hard">Hard</button>
+      </div>
+      <span class="kata-count" id="kata-count" aria-live="polite">
+        {{ katas | length }} kata{{ 's' if katas | length != 1 }}
+      </span>
+    </div>
+
+    <!-- Kata Grid -->
+    <div class="kata-grid" id="kata-grid">
+      {% for kata in katas %}
+        <article
+          class="kata-card fade-up"
+          data-difficulty="{{ kata.difficulty }}"
+          style="animation-delay: {{ loop.index0 * 40 }}ms"
+          aria-label="{{ kata.title }}, {{ kata.difficulty }} difficulty"
+        >
+          <!-- Full-card link -->
+          <a
+            href="{{ url_for('web.kata_detail', kata_id=kata.id) }}"
+            class="kata-card-link"
+            aria-label="Open {{ kata.title }}"
+            tabindex="0"
+          ></a>
+
+          <div class="kata-card-top">
+            <h2 class="kata-card-title">{{ kata.title }}</h2>
+            <span class="badge badge--{{ kata.difficulty }}">{{ kata.difficulty }}</span>
+          </div>
+
+          <p class="kata-card-desc">
+            {{ kata.description | truncate(120) if kata.description else 'No description available.' }}
+          </p>
+
+          <div class="kata-card-footer">
+            <div class="kata-card-tags">
+              {% for tag in kata.tags[:4] %}
+                <span class="badge badge--tag">{{ tag }}</span>
+              {% endfor %}
+            </div>
+            <span class="kata-card-arrow">Start →</span>
+          </div>
+        </article>
+      {% else %}
+        <div class="kata-card" style="grid-column: 1 / -1; opacity: 0.5; pointer-events: none; padding: 3rem; text-align: center;">
+          <p style="color: var(--text-2); font-size: 0.85rem;">No katas found. Add some to the <code>katas/</code> directory.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Empty state when filters hide everything -->
+    <div id="no-filter-results" style="display:none; text-align:center; padding: 4rem 0;">
+      <p style="color: var(--text-3); font-size: 0.85rem; letter-spacing: 0.06em;">
+        No katas match the selected filter.
+      </p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

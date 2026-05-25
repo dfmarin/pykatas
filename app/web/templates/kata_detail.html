@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}{{ kata.title }} — Kata Platform{% endblock %}
+{% block description %}Solve the {{ kata.title }} Python kata{% endblock %}
+
+{% block codemirror_css %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="page-kata" id="kata-workspace" data-kata-id="{{ kata.id }}">
+
+  <!-- ── Kata Header ── -->
+  <header class="kata-header">
+    <nav class="kata-breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ url_for('web.index') }}">Katas</a>
+      <span class="kata-breadcrumb-sep">›</span>
+      <span>{{ kata.title }}</span>
+    </nav>
+
+    <h1 class="kata-header-title">{{ kata.title }}</h1>
+
+    <div class="kata-header-meta">
+      <span class="badge badge--{{ kata.difficulty }}">{{ kata.difficulty }}</span>
+      {% for tag in kata.tags %}
+        <span class="badge badge--tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+  </header>
+
+  <!-- ── Split Body ── -->
+  <div class="kata-body">
+
+    <!-- Left: Instructions pane -->
+    <aside class="pane-instructions" aria-label="Problem instructions">
+      <div class="pane-tabs" role="tablist">
+        <button class="pane-tab active" role="tab" aria-selected="true"  data-tab="problem">Problem</button>
+        {% if kata.public_tests %}
+          <button class="pane-tab" role="tab" aria-selected="false" data-tab="tests">Tests</button>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+          <button class="pane-tab" role="tab" aria-selected="false" data-tab="history">History</button>
+        {% endif %}
+      </div>
+
+      <!-- Problem tab -->
+      <div class="pane-panel active" id="tab-problem" role="tabpanel" aria-labelledby="tab-btn-problem">
+        <div class="pane-content">
+          <div
+            class="prose"
+            id="instructions-prose"
+            data-raw="{{ kata.readme | tojson }}"
+          >
+            <!-- Rendered by marked.js in submission.js -->
+            <p style="color:var(--text-3); font-size:0.8rem;">Loading instructions…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tests tab -->
+      {% if kata.public_tests %}
+        <div class="pane-panel" id="tab-tests" role="tabpanel">
+          <pre class="test-file-viewer" aria-label="Public test file">{{ kata.public_test_source }}</pre>
+        </div>
+      {% endif %}
+
+      <!-- History tab -->
+      {% if current_user.is_authenticated %}
+        <div class="pane-panel" id="tab-history" role="tabpanel">
+          {% if recent_submissions %}
+            <ul class="submission-list">
+              {% for sub in recent_submissions %}
+                <li class="submission-item">
+                  <span class="submission-item-status {{ sub.status.value }}">
+                    <span class="dot dot--{{ sub.status.value }}"></span>
+                    {{ sub.status.value | upper }}
+                  </span>
+                  {% if sub.execution_time_ms %}
+                    <span style="color:var(--text-3)">{{ sub.execution_time_ms }}ms</span>
+                  {% endif %}
+                  <span class="submission-item-time">
+                    {{ sub.created_at.strftime('%b %d, %H:%M') if sub.created_at else '—' }}
+                  </span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="no-submissions">No submissions yet.<br>Submit your first solution →</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </aside>
+
+    <!-- Right: Editor pane -->
+    <section class="pane-editor" aria-label="Code editor">
+
+      <!-- Editor topbar -->
+      <div class="editor-topbar">
+        <span class="editor-lang">
+          <span class="editor-lang-dot"></span>
+          Python 3.13
+        </span>
+        <div class="editor-actions">
+          <button class="btn btn--sm" id="btn-reset" title="Reset to starter code">Reset</button>
+        </div>
+      </div>
+
+      <!-- CodeMirror mounts here -->
+      <div class="editor-area">
+        <textarea id="code-editor" aria-label="Solution code editor">{{ kata.starter_code }}</textarea>
+      </div>
+
+      <!-- Feedback panel (hidden until submission) -->
+      <div class="feedback-panel" id="feedback-panel" role="region" aria-label="Submission feedback" aria-live="polite">
+        <div class="feedback-inner" id="feedback-inner">
+          <!-- Populated by submission.js -->
+        </div>
+      </div>
+
+      <!-- Submit bar -->
+      <div class="editor-submit-bar">
+        <div class="submit-info" id="submit-info" aria-live="polite">
+          <span style="color:var(--text-3); font-size:0.7rem; letter-spacing:0.06em;">
+            Ready to submit
+          </span>
+        </div>
+
+        {% if current_user.is_authenticated %}
+          <button class="btn btn--primary btn--lg" id="btn-submit" type="button">
+            Submit Solution
+          </button>
+        {% else %}
+          <a href="{{ url_for('web.login') }}?next={{ request.path }}" class="btn btn--primary btn--lg">
+            Login to Submit
+          </a>
+        {% endif %}
+      </div>
+    </section>
+
+  </div><!-- /kata-body -->
+</div><!-- /page-kata -->
+
+<!-- Embed kata metadata for JS -->
+<script id="kata-data" type="application/json">
+  {
+    "id":           {{ kata.id | tojson }},
+    "title":        {{ kata.title | tojson }},
+    "starterCode":  {{ kata.starter_code | tojson }}
+  }
+</script>
+{% endblock %}
+
+{% block codemirror_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  <!-- marked.js for README rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/submission.js') }}"></script>
+{% endblock %}

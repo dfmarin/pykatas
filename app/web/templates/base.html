@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Kata Platform{% endblock %}</title>
+  <meta name="description" content="{% block description %}Master Python one kata at a time{% endblock %}">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- CodeMirror 5 (lazy-loaded per page) -->
+  {% block codemirror_css %}{% endblock %}
+
+  <!-- App styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- ── Navbar ── -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-container">
+      <a href="{{ url_for('web.index') }}" class="nav-logo" aria-label="Kata Platform home">
+        <span class="logo-bracket">[</span>KATA<span class="logo-bracket">]</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="{{ url_for('web.index') }}" class="nav-link">Katas</a>
+
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('web.profile') }}" class="nav-link">
+            {{ current_user.username }}
+          </a>
+          <a href="{{ url_for('web.logout') }}" class="nav-link">Logout</a>
+        {% else %}
+          <a href="{{ url_for('web.login') }}" class="nav-link">Login</a>
+          <a href="{{ url_for('web.register') }}" class="nav-link nav-link--cta">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Flash Messages ── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container" role="alert" aria-live="polite">
+        {% for category, message in messages %}
+          <div class="flash flash--{{ category }}" role="status">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Page Content ── -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Scripts ── -->
+  {% block codemirror_js %}{% endblock %}
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>
