@@ -1,5 +1,6 @@
 from typing import List
 
+
 def two_sum(nums: List[int], target: int) -> List[int]:
     """
     Efficient O(n) solution using a hash map.
@@ -12,4 +13,3 @@ def two_sum(nums: List[int], target: int) -> List[int]:
         seen[num] = i
     # According to problem constraints, a solution always exists.
     return []
-

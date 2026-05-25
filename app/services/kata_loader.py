@@ -69,4 +69,3 @@ class KataLoader:
             raise KataLoaderError(f"{path}: missing fields {missing}")
         if raw["difficulty"] not in VALID_DIFFICULTIES:
             raise KataLoaderError(f"{path}: invalid difficulty '{raw['difficulty']}'")
-

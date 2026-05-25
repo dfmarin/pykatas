@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 def get_total(costs: Dict[str, float], items: List[str], tax: float) -> float:
     """
     Calculate total cost including tax.
@@ -13,4 +14,3 @@ def get_total(costs: Dict[str, float], items: List[str], tax: float) -> float:
     float: Total cost rounded to two decimal places.
     """
     pass
-

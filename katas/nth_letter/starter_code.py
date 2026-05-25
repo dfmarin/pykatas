@@ -1,5 +1,6 @@
 from typing import List
 
+
 def build_word(words: List[str]) -> str:
     """
     Concatenate the ith letter of the ith word.
@@ -11,4 +12,3 @@ def build_word(words: List[str]) -> str:
     str: Concatenated letters.
     """
     pass
-

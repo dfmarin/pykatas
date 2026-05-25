@@ -1,5 +1,6 @@
 from typing import List
 
+
 def two_sum(nums: List[int], target: int) -> List[int]:
     """
     Given a list of integers and a target, return the indices of the two numbers
@@ -18,4 +19,3 @@ def two_sum(nums: List[int], target: int) -> List[int]:
     """
     # Write your solution here
     pass
-

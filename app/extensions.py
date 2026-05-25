@@ -8,4 +8,3 @@ login_manager = LoginManager()
 migrate = Migrate()
 
 kata_loader = KataLoader(kata_dir="katas")  # overridden in tests
-

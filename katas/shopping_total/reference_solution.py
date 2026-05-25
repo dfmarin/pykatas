@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 def get_total(costs: Dict[str, float], items: List[str], tax: float) -> float:
     subtotal = 0.0
     for item in items:
@@ -8,4 +9,3 @@ def get_total(costs: Dict[str, float], items: List[str], tax: float) -> float:
     total = subtotal * (1 + tax)
     # Round to two decimal places
     return round(total, 2)
-

@@ -14,4 +14,3 @@ class Dictionary:
         Returns the definition of the word, or an error message if not found.
         """
         pass
-
