@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from redis import Redis
+from redis.exceptions import RedisError
 from rq import Queue
 from app.extensions import db, kata_loader
 from app.models.submission import Submission, SubmissionStatus
@@ -35,11 +36,22 @@ def submit(kata_id: str):
     db.session.add(sub)
     db.session.commit()
 
-    redis_conn = Redis.from_url(current_app.config["REDIS_URL"])
-    q = Queue("submissions", connection=redis_conn)
-    q.enqueue(execute_submission, sub.id, job_timeout=120)
-
-    return jsonify({"id": sub.id, "status": sub.status.value}), 202
+    try:
+        redis_conn = Redis.from_url(current_app.config["REDIS_URL"])
+        q = Queue("submissions", connection=redis_conn)
+        q.enqueue(execute_submission, sub.id, job_timeout=120)
+        return jsonify({"id": sub.id, "status": sub.status.value}), 202
+    except RedisError as exc:
+        if current_app.config.get("DEBUG"):
+            result = execute_locally(sub, kata)
+            sub.status = result.status
+            sub.stdout = result.stdout
+            sub.stderr = result.stderr
+            sub.pytest_output = result.pytest_output
+            sub.execution_time_ms = result.execution_time_ms
+            db.session.commit()
+            return jsonify({"id": sub.id, "status": sub.status.value, "fallback": "local"}), 200
+        raise
 
 
 @api_bp.get("/submissions/<int:submission_id>")
