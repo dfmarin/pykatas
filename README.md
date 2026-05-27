@@ -86,6 +86,7 @@ graph TD
 - Docker & Docker Compose (or Docker Desktop)
 - GNU Make
 - Python 3.13 (for local development without containers – optional)
+- Python dependencies installed via `pip install -e .` (includes `markdown` for server-side README rendering)
 
 ### Quick Start (with Docker Compose)
 
