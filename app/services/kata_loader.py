@@ -10,23 +10,15 @@ VALID_DIFFICULTIES = {"easy", "medium", "hard"}
 class KataDefinition:
     id: str
     title: str
+    description: str
     difficulty: str
     tags: list[str]
-    function_name: str
+    entry_name: str
     timeout_seconds: int
     memory_limit_mb: int
     kata_dir: Path
     public_tests: bool = True
     lint_rules: list[str] = field(default_factory=list)
-
-    @property
-    def description(self) -> str:
-        for line in self.readme.splitlines():
-            line = line.strip().lstrip("#").strip()
-            # first non-empty line of the README
-            if line:
-                return line
-        return ""
 
     @property
     def public_test_source(self) -> str:
@@ -60,27 +52,45 @@ class KataLoader:
     def load_all(self) -> list[KataDefinition]:
         katas = []
         for path in sorted(self._kata_dir.iterdir()):
-            if path.is_dir() and (path / "kata.yaml").exists():
-                katas.append(self._load_one(path))
+            if path.is_dir():
+                metadata_path = self._find_metadata_file(path)
+                if metadata_path is not None:
+                    katas.append(self._load_one(path, metadata_path))
         return katas
 
     def get(self, kata_id: str) -> Optional[KataDefinition]:
         if kata_id not in self._cache:
             path = self._kata_dir / kata_id
-            if not path.exists():
+            if not path.exists() or not path.is_dir():
                 return None
-            self._cache[kata_id] = self._load_one(path)
+            metadata_path = self._find_metadata_file(path)
+            if metadata_path is None:
+                return None
+            self._cache[kata_id] = self._load_one(path, metadata_path)
         return self._cache[kata_id]
 
-    def _load_one(self, path: Path) -> KataDefinition:
-        raw = yaml.safe_load((path / "kata.yaml").read_text())
+    def _find_metadata_file(self, path: Path) -> Optional[Path]:
+        for filename in ("kata.yaml", "kata.yml"):
+            metadata_path = path / filename
+            if metadata_path.exists():
+                return metadata_path
+        return None
+
+    def _load_one(self, path: Path, metadata_path: Path) -> KataDefinition:
+        raw = yaml.safe_load(metadata_path.read_text())
         self._validate(raw, path)
-        return KataDefinition(kata_dir=path, **raw)
+        raw["entry_name"] = raw.get("function_name") or raw.get("class_name")
+        filtered = {k: v for k, v in raw.items() if k in KataDefinition.__annotations__}
+        return KataDefinition(kata_dir=path, **filtered)
 
     def _validate(self, raw: dict, path: Path) -> None:
-        required = {"id", "title", "difficulty", "function_name"}
+        required = {"id", "title", "difficulty"}
         missing = required - raw.keys()
         if missing:
             raise KataLoaderError(f"{path}: missing fields {missing}")
+        if not (raw.get("function_name") or raw.get("class_name")):
+            raise KataLoaderError(
+                f"{path}: missing required entry point field, expected function_name or class_name"
+            )
         if raw["difficulty"] not in VALID_DIFFICULTIES:
             raise KataLoaderError(f"{path}: invalid difficulty '{raw['difficulty']}'")
