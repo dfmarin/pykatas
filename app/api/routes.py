@@ -1,4 +1,4 @@
-from flask import request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from redis import Redis
 from rq import Queue
@@ -35,7 +35,7 @@ def submit(kata_id: str):
     db.session.add(sub)
     db.session.commit()
 
-    redis_conn = Redis.from_url(flask.current_app.config["REDIS_URL"])
+    redis_conn = Redis.from_url(current_app.config["REDIS_URL"])
     q = Queue("submissions", connection=redis_conn)
     q.enqueue(execute_submission, sub.id, job_timeout=120)
 

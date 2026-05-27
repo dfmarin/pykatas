@@ -25,7 +25,7 @@ class TestingConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
 
 
 config_by_name = {

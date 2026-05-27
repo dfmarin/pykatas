@@ -1,7 +1,6 @@
-from flask import Flask
+from flask import Flask, render_template
 from app.config import config_by_name
 from app.extensions import db, login_manager, migrate
-from app.api.routes import api_bp
 
 
 def create_app(config_name: str = "development") -> Flask:
