@@ -2,9 +2,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: kata_dev
-      POSTGRES_USER: kata
-      POSTGRES_PASSWORD: kata
+      POSTGRES_DB: ${POSTGRES_DB:-kata_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-kata}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kata}
     ports: ["5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -27,11 +27,12 @@ services:
     volumes: [".:/app"]
     ports: ["5000:5000"]
     environment:
-      FLASK_APP: wsgi.py
-      FLASK_ENV: development
-      DATABASE_URL: postgresql+psycopg://kata:kata@db/kata_dev
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: dev-secret-change-in-prod
+      FLASK_APP: ${FLASK_APP:-app.py}
+      FLASK_ENV: ${FLASK_ENV:-development}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      SECRET_KEY: ${SECRET_KEY}
+    env_file: .env
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -41,9 +42,10 @@ services:
     command: rq worker --url redis://redis:6379/0 submissions
     volumes: [".:/app"]
     environment:
-      DATABASE_URL: postgresql+psycopg://kata:kata@db/kata_dev
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: dev-secret-change-in-prod
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      SECRET_KEY: ${SECRET_KEY}
+    env_file: .env
     depends_on: [db, redis]
 
 volumes:
