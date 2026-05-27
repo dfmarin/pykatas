@@ -49,7 +49,7 @@ class KataDefinition:
                 extensions=["fenced_code", "tables", "sane_lists"],
             )
         escaped = html.escape(self.readme)
-        return f"<pre style=\"white-space: pre-wrap;\">{escaped}</pre>"
+        return f'<pre style="white-space: pre-wrap;">{escaped}</pre>'
 
     @property
     def has_hidden_tests(self) -> bool:
