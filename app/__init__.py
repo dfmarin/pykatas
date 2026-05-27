@@ -4,13 +4,21 @@ from app.extensions import db, login_manager, migrate
 
 
 def create_app(config_name: str = "development") -> Flask:
-    app = Flask(__name__, static_folder="../static", template_folder="web/templates")
+    app = Flask(__name__, static_folder="static", template_folder="web/templates")
     app.config.from_object(config_by_name[config_name])
 
     # Extensions
     db.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+
+    # Ensure local dev/test DB schema exists
+    from app.models.submission import Submission  # noqa: F401
+    from app.models.user import User  # noqa: F401
+
+    if config_name in ("development", "testing"):
+        with app.app_context():
+            db.create_all()
 
     # Blueprints
     from app.web.routes import web_bp

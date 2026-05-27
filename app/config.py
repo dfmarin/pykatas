@@ -13,16 +13,12 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", "sqlite:///kata_dev.db"
-    )
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///kata_dev.db")
 
 
 class TestingConfig(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", "sqlite:///:memory:"
-    )
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///:memory:")
     WTF_CSRF_ENABLED = False
 
 
