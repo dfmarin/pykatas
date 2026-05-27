@@ -71,19 +71,26 @@
 
   /* ── Markdown Rendering ─────────────────────────────────── */
   const proseEl = document.getElementById('instructions-prose');
-  if (proseEl && typeof marked !== 'undefined') {
+  if (proseEl) {
     try {
       const raw = JSON.parse(proseEl.dataset.raw || '""');
       if (raw) {
-        marked.setOptions({
-          breaks:   true,
-          gfm:      true,
-          sanitize: false,
-        });
-        proseEl.innerHTML = marked.parse(raw);
+        if (typeof marked !== 'undefined') {
+          marked.setOptions({
+            breaks:   true,
+            gfm:      true,
+            sanitize: false,
+          });
+          proseEl.innerHTML = marked.parse(raw);
+        } else {
+          proseEl.textContent = raw;
+          proseEl.style.whiteSpace = 'pre-wrap';
+        }
       }
     } catch (e) {
       console.warn('[KataUI] Could not parse README markdown:', e);
+      proseEl.textContent = proseEl.dataset.raw || '';
+      proseEl.style.whiteSpace = 'pre-wrap';
     }
   }
 
