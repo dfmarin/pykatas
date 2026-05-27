@@ -47,14 +47,9 @@
       <!-- Problem tab -->
       <div class="pane-panel active" id="tab-problem" role="tabpanel" aria-labelledby="tab-btn-problem">
         <div class="pane-content">
-          <div
-            class="prose"
-            id="instructions-prose"
-            data-raw="{{ kata.readme | tojson }}"
-          >
-            <!-- Rendered by marked.js in submission.js -->
-            <p style="color:var(--text-3); font-size:0.8rem;">Loading instructions…</p>
-          </div>
+          <div class="prose" id="instructions-prose">
+          {{ kata.readme_html | safe }}
+        </div>
         </div>
       </div>
 
@@ -157,8 +152,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
-  <!-- marked.js for README rendering -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 {% endblock %}
 
 {% block scripts %}

@@ -1,7 +1,13 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+import html
 import yaml
+
+try:
+    import markdown
+except ImportError:
+    markdown = None
 
 VALID_DIFFICULTIES = {"easy", "medium", "hard"}
 
@@ -34,6 +40,16 @@ class KataDefinition:
     @property
     def readme(self) -> str:
         return (self.kata_dir / "README.md").read_text()
+
+    @property
+    def readme_html(self) -> str:
+        if markdown is not None:
+            return markdown.markdown(
+                self.readme,
+                extensions=["fenced_code", "tables", "sane_lists"],
+            )
+        escaped = html.escape(self.readme)
+        return f"<pre style=\"white-space: pre-wrap;\">{escaped}</pre>"
 
     @property
     def has_hidden_tests(self) -> bool:
