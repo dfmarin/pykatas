@@ -14,13 +14,15 @@ class BaseConfig:
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL", "postgresql+psycopg://kata:kata@localhost/kata_dev"
+        "DATABASE_URL", "sqlite:///kata_dev.db"
     )
 
 
 class TestingConfig(BaseConfig):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "postgresql+psycopg://kata:kata@localhost/kata_test"
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL", "sqlite:///:memory:"
+    )
     WTF_CSRF_ENABLED = False
 
 

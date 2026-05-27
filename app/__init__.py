@@ -4,7 +4,7 @@ from app.extensions import db, login_manager, migrate
 
 
 def create_app(config_name: str = "development") -> Flask:
-    app = Flask(__name__, static_folder="../static")
+    app = Flask(__name__, static_folder="../static", template_folder="web/templates")
     app.config.from_object(config_by_name[config_name])
 
     # Extensions
