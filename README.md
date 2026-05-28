@@ -108,11 +108,10 @@ make migrate
 make sandbox-build
 
 # If you change dependencies or add console scripts (for example `rq`), rebuild images:
-```
-# make down
-# docker compose build --no-cache
-# make up
-# ```
+
+make down
+docker compose build --no-cache
+make up
 ```
 
 Visit [http://localhost:5000](http://localhost:5000). Register an account and solve any of the four python katas provided.
