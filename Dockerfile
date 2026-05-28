@@ -3,6 +3,8 @@ FROM python:3.13-slim AS builder
 
 WORKDIR /build
 COPY pyproject.toml .
+# Copy project source so pip can install the package and its dependencies
+COPY . .
 RUN pip install --no-cache-dir build && \
     pip install --no-cache-dir -e ".[dev]"
 
@@ -13,6 +15,7 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 WORKDIR /app
 COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 COPY . .
 
 ENV PYTHONDONTWRITEBYTECODE=1 \

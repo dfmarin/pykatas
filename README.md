@@ -106,6 +106,13 @@ make migrate
 
 # Build the sandbox image (once)
 make sandbox-build
+
+# If you change dependencies or add console scripts (for example `rq`), rebuild images:
+```
+# make down
+# docker compose build --no-cache
+# make up
+# ```
 ```
 
 Visit [http://localhost:5000](http://localhost:5000). Register an account and solve any of the four python katas provided.
@@ -115,6 +122,20 @@ Visit [http://localhost:5000](http://localhost:5000). Register an account and so
 * `make test` → runs unit + integration tests (requires Postgres/Redis).  
 * `make lint` → runs Ruff.  
 * `make worker` → starts an RQ worker manually (if not using Docker Compose).
+
+### Troubleshooting
+
+- If the `worker` container fails with `exec: "rq": executable file not found in $PATH`, the runtime image may be missing console scripts installed by your dependencies. Rebuild the images so the builder stage installs dependencies and the runtime image includes console entrypoints:
+
+```bash
+docker compose up --build -d
+```
+
+### Notes on images
+
+- The repo provides two distinct Docker build targets:
+    - `Dockerfile` at the project root — builds the application image used by the `web` and `worker` services (development/runtime image).
+    - `sandbox/Dockerfile` — builds the ephemeral sandbox image for executing kata submissions; it is intentionally separate and should not be reused as the runtime image for `web`/`worker`.
 
 ## Project Structure (Selected)
 
